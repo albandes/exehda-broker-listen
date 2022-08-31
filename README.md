@@ -4,10 +4,10 @@
 
 * **Links**
 
-    * [How to use mqtt in php](https://www.emqx.com/en/blog/how-to-use-mqtt-in-php)
-
 No servidor instalar a Mosquitto-PHP - MQTT Client Library 
-    https://www.hivemq.com/blog/mqtt-client-library-encyclopedia-mosquitto-php/
+
+    * [mqtt client library](https://www.hivemq.com/blog/mqtt-client-library-encyclopedia-mosquitto-php/)
+
 
 ## Criar o service no systemd.
 
