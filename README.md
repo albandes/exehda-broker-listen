@@ -1,13 +1,12 @@
 # Listen Broker Mqtt
 
-## Classe MQTT usada na API
+## Preparação do Servidor
 
-* **Links**
-
-No servidor instalar a Mosquitto-PHP - MQTT Client Library 
-
-    * [mqtt client library](https://www.hivemq.com/blog/mqtt-client-library-encyclopedia-mosquitto-php/)
-
+* **Mosquitto Library**
+   
+   No servidor instalar a Mosquitto-PHP - MQTT Client Library.
+   
+   https://www.hivemq.com/blog/mqtt-client-library-encyclopedia-mosquitto-php/
 
 ## Criar o service no systemd.
 
