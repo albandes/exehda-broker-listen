@@ -1,7 +1,6 @@
 .env
 /composer.lock
 /exehda.log
-/listen.php
 /listen.php.OLD
 /listen_2.php
 /vendor

@@ -9,6 +9,7 @@ require("vendor/autoload.php");
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+$dotenv->required('DEBUG')->isBoolean();
 
 date_default_timezone_set($_ENV['TIME_ZONE']);
 
@@ -29,7 +30,7 @@ try{
 // run
 $listen = new mqtt($client, $db);
 $listen->set_debug($_ENV['DEBUG']);
-$listen->setTopics(['rogerio/#' => 0]);
+$listen->setTopics(['rogerio/#' => 0, 'teste' => 0]);
 $listen->run();
 
 

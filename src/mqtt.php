@@ -153,7 +153,9 @@ class mqtt
 
         $arrayMessage = explode('/', $message->topic);
 
-        if($debug) 
+        var_dump($debug);
+        
+        if($debug == true) 
             $this->echoPayload($message);
 
 
