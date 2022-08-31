@@ -5,6 +5,7 @@ namespace Albandes;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Formatter\LineFormatter;
+use vlucas\phpdotenv;
 
 /**
  * mqtt
@@ -112,8 +113,7 @@ class mqtt
     {
         // create a log channel
         $formatter = new LineFormatter(null, "d/m/Y H:i:s");
-        //$stream = new StreamHandler( $_ENV['LOG_FILE'], Logger::DEBUG);
-        $stream = new StreamHandler( 'exehda.log', Logger::DEBUG);
+        $stream = new StreamHandler( $_ENV['LOG_FILE'], Logger::DEBUG);
         $stream->setFormatter($formatter);
         $logger = new Logger('exehda');
         $logger->pushHandler($stream);
