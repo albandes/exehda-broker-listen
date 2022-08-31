@@ -154,7 +154,7 @@ class mqtt
         $arrayMessage = explode('/', $message->topic);
 
         var_dump($debug);
-        
+
         if($debug == true) 
             $this->echoPayload($message);
 
@@ -267,7 +267,7 @@ class mqtt
      */ 
     public function set_debug($_debug)
     {
-        $this->_debug = $_debug;
+        $this->_debug = (boolean)$_debug;
 
         return $this;
     }
