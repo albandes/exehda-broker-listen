@@ -50,3 +50,27 @@
     
     https://medium.com/@benmorel/creating-a-linux-service-with-systemd-611b5c8b91d6
 
+## Mysql
+
+* **Store Procedures**
+
+```sql
+DELIMITER $$
+
+USE `exehda`$$
+
+DROP PROCEDURE IF EXISTS `exd_insertSensorDataByUuid`$$
+
+CREATE PROCEDURE `exd_insertSensorDataByUuid`(IN sensor_uuid CHAR(36), IN collection_date DATETIME, IN collected_value DECIMAL(10,6), OUT insertId INT )
+BEGIN
+SET @id = ( SELECT exd_sensor.sensor_id FROM exd_sensor WHERE exd_sensor.uuid= sensor_uuid );
+IF @id IS NULL  THEN
+   SET insertId := @id;
+ELSE
+   INSERT INTO exd_sensor_data (sensor_id,collection_date,collected_value,publication_date) VALUES (@id,collection_date,collected_value,NOW());
+   SET insertId := LAST_INSERT_ID();
+END IF;
+END$$
+
+DELIMITER ;
+```

@@ -66,6 +66,15 @@ class mqtt
      * @var boolean Debug status
      */
     private $_debug ;
+
+        
+        
+    /**
+     * _storeProcedure
+     *
+     * @var mixed
+     */
+    private $_storeProcedure;
   
     /**
      * applogger
@@ -150,6 +159,7 @@ class mqtt
     public function handleMessage($message)
     {
         $debug = $this->get_debug();
+        $storeProcedure = $this->get_storeProcedure();
 
         $arrayMessage = explode('/', $message->topic);
         
@@ -174,26 +184,50 @@ class mqtt
                 else 
                     return;    
 
-                if ($elements > 1) 
-                    $sensorObj = $this->getSensorByUUID($aPayload['uuid_sensor']);
-                else
-                    return;
+                if($storeProcedure == true) {
+                    
+                    $sql = "CALL exd_insertSensorDataByUuid(?,?, ?, @out)";
+                    $param = array($aPayload['uuid_sensor'],$aPayload['date'],$aPayload['data']); 
+                    $this->db->insert($sql, $param);    
+    
+                    $query = "SELECT @out as lastInsertId";
+                    $query = $this->db->query($query);
+                    $rs = $query->fetch();
+                    
+                    if(is_null($rs['lastInsertId'])) {
+                        $this->_applogger->error('UUID not exists in sensor table! ',['uuid'=>$aPayload['uuid_sensor']]);    
+                        return;                     
+                    }
 
-                if(!$sensorObj ) {
-                    $this->_applogger->error('UUID not exists in sensor table! ',['uuid'=>$aPayload['uuid_sensor']]);    
-                    return; 
+                    $this->_applogger->info('Saved in the database ',['table_id'=>$rs['lastInsertId'],'topic' => $arrayMessage[0],'json' => $aPayload]); 
+
+                } else {
+                    
+                    if ($elements > 1) 
+                        $sensorObj = $this->getSensorByUUID($aPayload['uuid_sensor']);
+                    else
+                        return;
+
+                    if(!$sensorObj ) {
+                        $this->_applogger->error('UUID not exists in sensor table! ',['uuid'=>$aPayload['uuid_sensor']]);    
+                        return; 
+                    }
+
+                    $sql = "INSERT INTO exd_sensor_data (sensor_id,collection_date,collected_value,publication_date) VALUES (?,?,?,NOW(6))";
+                    $param = array($sensorObj->sensor_id,$aPayload['date'],$aPayload['data']);
+                    $lastInsertId = $this->db->insert($sql, $param);
+                    $this->_applogger->info('Saved in the database ',['table_id'=>$lastInsertId,'topic' => $arrayMessage[0],'json' => $aPayload]); 
+
                 }
 
-                $sql = "INSERT INTO exd_sensor_data (sensor_id,collection_date,collected_value,publication_date) VALUES (?,?,?,NOW(6))";
-                $param = array($sensorObj->sensor_id,$aPayload['date'],$aPayload['data']);
-                $lastInsertId = $this->db->insert($sql, $param);
-                $this->_applogger->info('Saved in the database ',['table_id'=>$lastInsertId,'topic' => $arrayMessage[0],'json' => $aPayload]); 
 
-            } elseif($aPayload['type'] == 'log' ) {
+            }  
+
+        } elseif($aPayload['type'] == 'log' ) {
                 // {"date": "2022-8-31 11:30:3", "type": "log", "data": "Except thread_sub: -1", "uuid_gateway": "5aa027bd-4afc-461c-b353-c2535008f4ce"}
-            }
-        
-        }        
+                
+        }
+                
 
     }
     
@@ -290,6 +324,30 @@ class mqtt
     public function set_applogger(object $_applogger)
     {
         $this->_applogger = $_applogger;
+
+        return $this;
+    }
+
+    /**
+     * Get _storeProcedure
+     *
+     * @return  mixed
+     */ 
+    public function get_storeProcedure()
+    {
+        return $this->_storeProcedure;
+    }
+
+    /**
+     * Set _storeProcedure
+     *
+     * @param  mixed  $_storeProcedure  _storeProcedure
+     *
+     * @return  self
+     */ 
+    public function set_storeProcedure($_storeProcedure)
+    {
+        $this->_storeProcedure = $_storeProcedure;
 
         return $this;
     }
