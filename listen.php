@@ -27,9 +27,12 @@ try{
     die("<br>Error connecting to database: " . $e->getMessage() . " File: " . __FILE__ . " Line: " . __LINE__ );
 }
 
+
+$debug = filter_var($_ENV['DEBUG'], FILTER_VALIDATE_BOOLEAN) ;
+
 // run
 $listen = new mqtt($client, $db);
-$listen->set_debug($_ENV['DEBUG']);
+$listen->set_debug($debug);
 $listen->setTopics(['rogerio/#' => 0, 'teste' => 0]);
 $listen->run();
 
