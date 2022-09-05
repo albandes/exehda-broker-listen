@@ -171,6 +171,7 @@ class mqtt
             return;
         }    
 
+        $aPayload = '';
         if($arrayMessage[0] == 'rogerio') {
             
             $this->_applogger->reset();
@@ -224,8 +225,12 @@ class mqtt
             }  
 
         } elseif($aPayload['type'] == 'log' ) {
+                $sql = "INSERT INTO exd_log (message,datetime_log,gateway_uuid) VALUES (?,?,?)";
                 // {"date": "2022-8-31 11:30:3", "type": "log", "data": "Except thread_sub: -1", "uuid_gateway": "5aa027bd-4afc-461c-b353-c2535008f4ce"}
-                
+                $param = array($aPayload['data'],$aPayload['date'], $aPayload['uuid_gateway']);
+                $lastInsertId = $this->db->insert($sql, $param);
+                $this->_applogger->info('Saved in the database ',['table_id'=>$lastInsertId,'topic' => $arrayMessage[0],'json' => $aPayload]); 
+
         }
                 
 
