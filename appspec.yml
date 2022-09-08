@@ -19,4 +19,7 @@ permissions:
     mode: 764
     type:
       - directory      
-      
+hooks:
+  AfterInstall:
+    - location: /aws_scripts/after_install.sh          
+    
