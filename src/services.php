@@ -42,7 +42,6 @@ class services
     {
 
         $this->makeLogger();
-        $this->_applogger->info('Run script ');   
         
     }
     

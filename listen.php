@@ -25,28 +25,28 @@ try{
     die("<br>Error connecting to database: " . $e->getMessage() . " File: " . __FILE__ . " Line: " . __LINE__ );
 }
 
-$arrayTopics = array('rogerio' => "0", "teste" => "0");
-
 $exehda = new exehda($db);
 $exehda->set_debug($debug);
 $exehda->set_storeProcedure($storeProcedure);
 
+$aTopics = $exehda->makeTopics($_ENV);
+
 $services = new services();
 
 /* Construct a new client instance, passing a client ID of “MyClient” */
-$client = new Client('MyClient');
+$client = new Client('exehdaClient-'.mt_rand());
 
 /* Set the callback fired when the connection is complete */
-$client->onConnect(function($code, $message) use ($client, $services, $arrayTopics) {
+$client->onConnect(function($code, $message) use ($client, $services, $aTopics) {
     
     /* Subscribe to the broker's $SYS namespace, which shows debugging info */
     $logger = $services->get_applogger();
     if ($code == 0)
-        $logger->info('Connect do broker: ' . $services->errorConnection($code));
+        $logger->info('Connect to broker: ' . $services->errorConnection($code));
     else
-        $logger->error('Connect do broker: ' . $services->errorConnection($code));    
+        $logger->error('Connect to broker: ' . $services->errorConnection($code));    
 
-    foreach ($arrayTopics as $topic => $qos) {
+    foreach ($aTopics as $topic => $qos) {
             $client->subscribe($topic, $qos);
             $logger->info("Subscribe topic: {$topic}"); 
     }    
@@ -60,8 +60,8 @@ $client->onMessage(function($message) use ($exehda,$db) {
 
 /* Connect, supplying the host and port. */
 /* If not supplied, they default to localhost and port 1883 */
-$client->setCredentials('middleware','exehda');
-$client->connect('brokermqtt1.exehda.org', 1883, 60);
+$client->setCredentials($_ENV['BROKER_USERNAME'],$_ENV['BROKER_PASSWORD']);
+$client->connect($_ENV['BROKER_URL'], 1883, 60);
 
 /* Enter the event loop */
 $client->loopForever();
