@@ -63,8 +63,25 @@ class exehda
                 
         $services = new services();
         $this->_applogger = $services->get_applogger();
-        $this->_applogger->info('entrou exehda');
         
+    }
+        
+    /**
+     * makeTopics
+     *
+     * @param  mixed $env
+     * @return void
+     */
+    public function makeTopics($env)
+    {
+        
+        $arrayTemp = explode(',',$env['BROKER_TOPIC']);
+        $arrayTopics = array();
+        foreach ($arrayTemp as $i => $topic) {
+            $arrayTopics = array_merge( $arrayTopics , [trim($topic)=>$env['BROKER_QOS']] );
+        }
+
+        return $arrayTopics;
     }
     
     /**
